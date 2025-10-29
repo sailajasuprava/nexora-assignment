@@ -6,6 +6,7 @@ const path = require("path");
 
 const authRouter = require("./routes/authRoutes");
 const pizzaRouter = require("./routes/pizzaRoutes");
+const cartRouter = require("./routes/cartRoutes");
 
 const globalErrorHandler = require("./controllers/errorController");
 const AppError = require("./utils/appArror");
@@ -26,6 +27,7 @@ app.use(mongoSanitize());
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/pizzas", pizzaRouter);
+app.use("/api/v1/cart", cartRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`This route ${req.originalUrl} doesn't exist.`, 404));

@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import AppLayout from "./components/AppLayout";
 import { Toaster } from "react-hot-toast";
+import PizzaDetails from "./pages/PizzaDetails";
+import CartPage from "./pages/Cart";
 
 function App() {
   const { auth } = useAuth();
@@ -13,6 +15,8 @@ function App() {
       <Routes>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/pizza/:pizzaId" element={<PizzaDetails />} />
+          <Route path="/cart" element={<CartPage />} />
           <Route
             path="/signup"
             element={auth ? <Navigate to="/" /> : <Signup />}
