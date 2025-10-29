@@ -4,6 +4,8 @@ const cookieParser = require("cookie-parser");
 const mongoSanitize = require("express-mongo-sanitize");
 const path = require("path");
 
+const authRouter = require("./routes/authRoutes");
+
 const globalErrorHandler = require("./controllers/errorController");
 const AppError = require("./utils/appArror");
 
@@ -20,6 +22,8 @@ app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 app.use(express.json());
 app.use(cookieParser());
 app.use(mongoSanitize());
+
+app.use("/api/v1/auth", authRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`This route ${req.originalUrl} doesn't exist.`, 404));
