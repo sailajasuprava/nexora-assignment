@@ -16,7 +16,10 @@ function App() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/pizza/:pizzaId" element={<PizzaDetails />} />
-          <Route path="/cart" element={<CartPage />} />
+          <Route
+            path="/cart"
+            element={auth ? <CartPage /> : <Navigate to="/login" />}
+          />
           <Route
             path="/signup"
             element={auth ? <Navigate to="/" /> : <Signup />}

@@ -1,11 +1,17 @@
-import React from "react";
+import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import EmptyCart from "../components/EmptyCart";
+import { useAuth } from "../context/AuthContext";
 
 export default function CartPage() {
   const navigate = useNavigate();
   const { cart, addOrUpdateCart, removeCartItem, subtotal } = useCart();
+  const { auth } = useAuth();
+  const email = auth?.email;
+  const fullname = auth?.fullname;
+
+  const [showModal, setShowModal] = useState(false);
 
   const deliveryFee = subtotal > 300 ? 0 : 40;
   const tax = Math.round(subtotal * 0.05);
@@ -49,7 +55,6 @@ export default function CartPage() {
 
                   {/* Quantity & Remove */}
                   <div className="flex flex-col items-end justify-between">
-                    {/* Quantity Selector */}
                     <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
                       <button
                         onClick={() => addOrUpdateCart(item.pizzaId._id, -1)}
@@ -68,7 +73,6 @@ export default function CartPage() {
                       </button>
                     </div>
 
-                    {/* Price & Remove */}
                     <div className="text-right">
                       <p className="text-gray-600 text-sm">
                         Subtotal:{" "}
@@ -120,12 +124,6 @@ export default function CartPage() {
                     {deliveryFee === 0 ? "✓" : `₹${deliveryFee}`}
                   </span>
                 </div>
-
-                {deliveryFee > 0 && (
-                  <p className="text-xs text-gray-500 bg-yellow-50 p-2 rounded">
-                    Free delivery on orders above ₹300
-                  </p>
-                )}
               </div>
 
               <div className="border-t-2 border-yellow-100 pt-4 mb-6">
@@ -137,8 +135,11 @@ export default function CartPage() {
                 </div>
               </div>
 
-              <button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
-                Proceed to Buy
+              <button
+                onClick={() => setShowModal(true)}
+                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                Proceed to Checkout
               </button>
 
               <button
@@ -151,6 +152,72 @@ export default function CartPage() {
           </div>
         </div>
       </div>
+
+      {/* Checkout Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+          <div className="bg-white w-[90%] max-w-lg rounded-2xl p-6 shadow-2xl relative">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+              Checkout Details
+            </h2>
+
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-3 right-4 text-gray-600 hover:text-gray-900 text-xl"
+            >
+              ✕
+            </button>
+
+            <div className="space-y-3">
+              <p>
+                <span className="font-semibold">Name:</span> {fullname}
+              </p>
+              <p>
+                <span className="font-semibold">Email:</span> {email}
+              </p>
+              <hr className="my-3" />
+              <h3 className="text-lg font-semibold mb-2">Order Summary</h3>
+
+              {cart.map((item) => (
+                <div
+                  key={item.pizzaId._id}
+                  className="flex justify-between text-sm text-gray-700"
+                >
+                  <span>
+                    {item.pizzaId.name} × {item.quantity}
+                  </span>
+                  <span>₹{item.pizzaId.price * item.quantity}</span>
+                </div>
+              ))}
+
+              <hr className="my-3" />
+              <div className="flex justify-between font-semibold text-gray-900">
+                <span>Subtotal:</span>
+                <span>₹{subtotal}</span>
+              </div>
+              <div className="flex justify-between font-semibold text-gray-900">
+                <span>Tax (5%):</span>
+                <span>₹{tax}</span>
+              </div>
+              <div className="flex justify-between font-semibold text-gray-900">
+                <span>Delivery:</span>
+                <span>₹{deliveryFee}</span>
+              </div>
+              <div className="flex justify-between text-lg font-bold text-yellow-600 mt-2">
+                <span>Total:</span>
+                <span>₹{total}</span>
+              </div>
+
+              <button
+                onClick={() => alert("Proceeding to Payment...")}
+                className="mt-6 w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 rounded-lg transition"
+              >
+                Confirm & Pay
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

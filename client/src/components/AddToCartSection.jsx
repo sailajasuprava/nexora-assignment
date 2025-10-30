@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function AddToCartSection({ pizza }) {
   const [quantity, setQuantity] = useState(1);
   const { addOrUpdateCart } = useCart();
   const navigate = useNavigate();
+  const { auth } = useAuth();
 
   return (
     <div className="space-y-4 pt-8 border-t-2 border-yellow-200">
@@ -30,6 +32,10 @@ export default function AddToCartSection({ pizza }) {
 
       <button
         onClick={() => {
+          if (!auth) {
+            navigate("/login");
+            return;
+          }
           addOrUpdateCart(pizza?._id, quantity);
           navigate("/cart");
         }}
